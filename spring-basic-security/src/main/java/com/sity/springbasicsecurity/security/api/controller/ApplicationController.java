@@ -5,10 +5,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/v1/")
 public class ApplicationController {
-    @GetMapping("/getMsg")
-    public String greeting(){
-        return "Spring Security Example";
+    @GetMapping("/home")
+    public String home(){
+        return "Spring Security Home without Authentication";
+    }
+    @GetMapping("/auth/getMsg")
+    public String greeting() {
+        return "Spring Security Example with Authentication";
     }
 }
