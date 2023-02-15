@@ -1,7 +1,7 @@
 package com.sity.springbasicsecurity.security.api.config;
 
 import com.sity.springbasicsecurity.security.api.service.CustomUserDetailService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,7 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SpringSecurityConfig{
     private CustomUserDetailService customUserDetailService;
     @Bean
@@ -24,7 +24,7 @@ public class SpringSecurityConfig{
                 .csrf().disable()
                 .authorizeHttpRequests((authz)-> authz
                         .requestMatchers("/api/v1/auth/getMsg").authenticated()
-                        .requestMatchers("/api/v1/home").permitAll()
+                        .requestMatchers("/api/v1/home/register").permitAll()
                 )
                 .formLogin()
                 .and()
