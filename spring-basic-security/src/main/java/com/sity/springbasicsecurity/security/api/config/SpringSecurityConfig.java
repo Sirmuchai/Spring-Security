@@ -1,17 +1,23 @@
 package com.sity.springbasicsecurity.security.api.config;
 
+import com.sity.springbasicsecurity.security.api.service.CustomUserDetailService;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
 
 @Configuration
 @EnableWebSecurity
+@AllArgsConstructor
 public class SpringSecurityConfig{
+    private CustomUserDetailService customUserDetailService;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http
@@ -27,22 +33,13 @@ public class SpringSecurityConfig{
     }
 
     @Bean
-    public UserDetails users() {
-        UserDetails admin = User.builder()
-                .username("admin")
-                .password("pass")
-                .roles("ADMIN")
-                .build();
-        UserDetails user = User.builder()
-                .username("user")
-                .password("pass")
-                .roles("pass")
-                .roles("USER")
-                .build();
-        return (UserDetails) new InMemoryUserDetailsManager(admin,user);
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration authenticationConfiguration) throws Exception{
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
-
-
-
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
 }
