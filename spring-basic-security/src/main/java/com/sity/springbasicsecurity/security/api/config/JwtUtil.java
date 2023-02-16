@@ -11,7 +11,7 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-    private String generateToken(Authentication authentication){
+    public String generateToken(Authentication authentication){
         String username = authentication.getName();
         Date currentDate = new Date();
         Date expireDate = new Date(currentDate.getTime() + SecurityConstants.JWT_EXPIRATION);
@@ -20,7 +20,7 @@ public class JwtUtil {
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(expireDate)
-                .signWith(SignatureAlgorithm.ES256, SecurityConstants.JWT_SECRET)
+                .signWith(SignatureAlgorithm.HS256, SecurityConstants.JWT_SECRET)
                 .compact();
         return token;
     }
@@ -32,9 +32,9 @@ public class JwtUtil {
         return claims.getSubject();
     }
 
-    public boolean validateToken(String tokem){
+    public boolean validateToken(String token){
         try{
-            Jwts.parser().setSigningKey(SecurityConstants.JWT_SECRET).parseClaimsJws(tokem);
+            Jwts.parser().setSigningKey(SecurityConstants.JWT_SECRET).parseClaimsJws(token);
             return true;
         } catch (Exception ex){
             throw new AuthenticationCredentialsNotFoundException("JWT Token Expired or Incorrect");

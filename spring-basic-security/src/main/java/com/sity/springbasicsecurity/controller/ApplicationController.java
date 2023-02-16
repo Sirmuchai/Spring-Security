@@ -1,6 +1,7 @@
 package com.sity.springbasicsecurity.controller;
 
 import com.sity.springbasicsecurity.dto.request.RegisterRequest;
+import com.sity.springbasicsecurity.dto.response.AuthenticationToken;
 import com.sity.springbasicsecurity.security.api.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +21,15 @@ public class ApplicationController {
     public String greeting() {
         return "Spring Security Example with Authentication";
     }
+    @PostMapping("/home/login/")
+    public ResponseEntity<AuthenticationToken> login(@RequestBody RegisterRequest registerRequest){
+        return authenticationService.login(registerRequest);
+    }
 
     @PostMapping("/home/register")
     public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest){
         return authenticationService.register(registerRequest);
     }
 
-    @PostMapping("/home/login")
-    public ResponseEntity<String> login(@RequestBody RegisterRequest registerRequest){
-        return authenticationService.login(registerRequest);
-    }
+
 }

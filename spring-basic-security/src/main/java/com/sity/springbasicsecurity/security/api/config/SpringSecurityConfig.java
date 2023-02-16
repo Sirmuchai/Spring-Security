@@ -1,7 +1,7 @@
 package com.sity.springbasicsecurity.security.api.config;
 
 import com.sity.springbasicsecurity.security.api.service.CustomUserDetailService;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,14 +12,23 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 @Configuration
 @EnableWebSecurity
-@AllArgsConstructor
 public class SpringSecurityConfig{
-    private final JwtAuthEntryPoint authEntryPoint;
-    private final CustomUserDetailService customUserDetailService;
+
+    private  JwtAuthEntryPoint authEntryPoint;
+    private CustomUserDetailService customUserDetailService;
+
+    @Autowired
+    public SpringSecurityConfig(JwtAuthEntryPoint authEntryPoint, CustomUserDetailService customUserDetailService) {
+        this.authEntryPoint = authEntryPoint;
+        this.customUserDetailService = customUserDetailService;
+    }
+
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http
@@ -30,12 +39,12 @@ public class SpringSecurityConfig{
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authorizeHttpRequests( authz-> authz
-                        .requestMatchers("*/api/v1/home/**").permitAll()
-                        .anyRequest().authenticated())
-                .formLogin()
+                .authorizeHttpRequests()
+                .requestMatchers("/api/v1/home/**").permitAll()
+                .anyRequest().authenticated()
                 .and()
                 .httpBasic();
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -48,5 +57,9 @@ public class SpringSecurityConfig{
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean JwtAuthenticationFilter jwtAuthenticationFilter(){
+        return new JwtAuthenticationFilter();
     }
 }
