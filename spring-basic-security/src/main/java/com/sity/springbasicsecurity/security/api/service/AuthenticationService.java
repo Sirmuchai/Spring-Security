@@ -5,25 +5,28 @@ import com.sity.springbasicsecurity.security.api.model.Role;
 import com.sity.springbasicsecurity.security.api.model.UserEntity;
 import com.sity.springbasicsecurity.security.api.repository.RoleRepository;
 import com.sity.springbasicsecurity.security.api.repository.UsersRepository;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class AuthenticationService {
     private final RoleRepository roleRepository;
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
-    public ResponseEntity<String> register(RegisterRequest registerRequest){
-        if(usersRepository.existsByUsername(registerRequest.getUsername())){
+    public ResponseEntity<String> register(RegisterRequest registerRequest) {
+        if (usersRepository.existsByUsername(registerRequest.getUsername())) {
             return new ResponseEntity<>("Username already Exist", HttpStatus.BAD_REQUEST);
         }
         UserEntity user = new UserEntity();
@@ -35,5 +38,13 @@ public class AuthenticationService {
 
         usersRepository.save(user);
         return new ResponseEntity<>("User Registered successfully", HttpStatus.ACCEPTED);
+    }
+
+    public ResponseEntity<String> login(RegisterRequest registerRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(registerRequest.getUsername(),
+                        registerRequest.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return new ResponseEntity<>("User Successfuly LogedIn", HttpStatus.OK);
     }
 }

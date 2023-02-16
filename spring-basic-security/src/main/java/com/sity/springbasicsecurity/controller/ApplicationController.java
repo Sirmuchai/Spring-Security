@@ -12,7 +12,7 @@ public class ApplicationController {
     @Autowired
     private AuthenticationService authenticationService;
 
-    @GetMapping("/home")
+    @GetMapping("/home/")
     public String home(){
         return "Spring Security Home without Authentication";
     }
@@ -24,5 +24,10 @@ public class ApplicationController {
     @PostMapping("/home/register")
     public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest){
         return authenticationService.register(registerRequest);
+    }
+
+    @PostMapping("/home/login")
+    public ResponseEntity<String> login(@RequestBody RegisterRequest registerRequest){
+        return authenticationService.login(registerRequest);
     }
 }
